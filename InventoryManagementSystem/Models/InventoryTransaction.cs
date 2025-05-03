@@ -1,5 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+
+
 
 namespace InventoryManagementSystem.Models
 {
@@ -9,15 +13,15 @@ namespace InventoryManagementSystem.Models
         Remove,
         Transfer
     }
+
     public class InventoryTransaction
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
-        [ForeignKey("Product")]
+        [ForeignKey(nameof(Product))]
         public int ProductId { get; set; }
-
         public Product Product { get; set; }
 
         [Required]
@@ -32,14 +36,18 @@ namespace InventoryManagementSystem.Models
 
         [Required]
         public string UserId { get; set; }
+        // public ApplicationUser User { get; set; }  // إذا رغبتي تربطيها بالمستخدم
 
-        // Navigation Property (لو احتجنا نربطه بالـ User بعدين)
-        // public ApplicationUser User { get; set; }
+        //––– نقل المخزون بين مخازن –––//
 
-        // (اختياري) لو ضفنا Warehouses بعدين للـ Transfer
-        // public int? SourceWarehouseId { get; set; }
-        // public int? TargetWarehouseId { get; set; }
-        // public Warehouse SourceWarehouse { get; set; }
-        // public Warehouse TargetWarehouse { get; set; }
+        // المفتاح الخارجي للمخزن المصدر
+        [ForeignKey(nameof(SourceWarehouse))]
+        public int? SourceWarehouseId { get; set; }
+        public WareHouse SourceWarehouse { get; set; }
+
+        // المفتاح الخارجي للمخزن الوجهة
+        [ForeignKey(nameof(TargetWarehouse))]
+        public int? TargetWarehouseId { get; set; }
+        public WareHouse TargetWarehouse { get; set; }
     }
 }

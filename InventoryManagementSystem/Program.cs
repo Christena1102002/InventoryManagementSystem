@@ -1,11 +1,15 @@
-
+using InventoryManagementSystem.ViewModels;
 using InventoryManagementSystem.data;
 using InventoryManagementSystem.Reposatories.implementation;
 using InventoryManagementSystem.Reposatories.interfaces;
 using InventoryManagementSystem.UOW;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using AutoMapper;
 
+using InventoryManagementSystem.Models;
+using InventoryManagementSystem.DTOs;
+//using AutoMapper.Extensions.Microsoft.DependencyInjection;
 namespace InventoryManagementSystem
 {
     public class Program
@@ -30,7 +34,18 @@ namespace InventoryManagementSystem
             /***************** Interfaces injection *****************/
             builder.Services.AddScoped<IInventoryTransactionIRepository, InventoryTransactionsRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductWarehouseStockRepository, ProductWareHouseStockRepository>();
+            builder.Services.AddScoped<IWareHouseRepository, WareHouseRepository>();
+
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
 
             var app = builder.Build();
 

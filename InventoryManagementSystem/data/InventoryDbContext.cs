@@ -11,5 +11,9 @@ namespace InventoryManagementSystem.data
 
         public DbSet<Product> Products { get; set; }
         public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
+
+        public DbSet<ProductWareHouseStock> ProductWareHouseStocks { get; set; }
+
+        public DbSet<WareHouse> WareHouses { get; set; }
     }
 }
