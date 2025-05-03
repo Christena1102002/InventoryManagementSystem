@@ -29,6 +29,13 @@ namespace InventoryManagementSystem
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
+            //__________________
+
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                });
 
 
             /***************** Interfaces injection *****************/

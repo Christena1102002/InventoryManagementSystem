@@ -8,19 +8,18 @@ namespace InventoryManagementSystem.Models
         [Key]
         public int Id { get; set; }
 
-        // المفتاح الخارجي للمنتج
+
         [Required]
         [ForeignKey(nameof(Product))]
         public int ProductId { get; set; }
         public Product Product { get; set; }
 
-        // المفتاح الخارجي للمخزن
         [Required]
         [ForeignKey(nameof(WareHouse))]
         public int WareHouseId { get; set; }
         public WareHouse WareHouse { get; set; }
 
-        // الكمية المتوفرة
+      
         [Required]
         [Range(0, int.MaxValue)]
         public int Quantity { get; set; }

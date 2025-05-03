@@ -14,11 +14,12 @@ namespace InventoryManagementSystem.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public InventoryTransactionController(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly ILogger<InventoryTransactionController> _logger;
+        public InventoryTransactionController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<InventoryTransactionController> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
         //⦁	Add Stock: Increase the quantity of a specific product
         [HttpPut("add-stock/{id}")]
@@ -41,7 +42,7 @@ namespace InventoryManagementSystem.Controllers
                 TransactionType = TransactionType.Add,
                 Quantity = addStockDto.Quantity,
                 Date = DateTime.UtcNow,
-                UserId = "currentUserId" // مؤقتًا قيمة ثابتة أو تجيبيها من المستخدم الحالي
+                UserId = "currentUserId" 
             };
 
             await _unitOfWork.InventoryTransactions.AddAsync(transaction);
@@ -59,6 +60,7 @@ namespace InventoryManagementSystem.Controllers
         [HttpPut("remove-stock/{id}")]
         public async Task<IActionResult> RemoveStock(int id, [FromBody] AddStockDTO addStockDto)
         {
+
             if (addStockDto == null || addStockDto.Quantity <= 0)
                 return BadRequest("Invalid quantity");
 
@@ -71,13 +73,18 @@ namespace InventoryManagementSystem.Controllers
 
             existingProduct.Quantity -= addStockDto.Quantity;
 
+            if (existingProduct.Quantity <= existingProduct.LowStockThreshold)
+            {
+                _logger.LogWarning($"Low stock alert: Product '{existingProduct.Name}' has only {existingProduct.Quantity} items left. Please restock soon.");
+            }
+
             var transaction = new InventoryTransaction
             {
                 ProductId = existingProduct.Id,
-                TransactionType = TransactionType.Remove,  // Remove لأننا بنخصم
+                TransactionType = TransactionType.Remove,  
                 Quantity = addStockDto.Quantity,
                 Date = DateTime.UtcNow,
-                UserId = "currentUserId" // هنفترض حالياً تكتبي Id يدوي أو تجيبيه من User.Identity
+                UserId = "currentUserId" 
             };
 
             await _unitOfWork.InventoryTransactions.AddAsync(transaction);
@@ -108,10 +115,10 @@ namespace InventoryManagementSystem.Controllers
             if (sourceStock == null || sourceStock.Quantity < transferStockDto.Quantity)
                 return BadRequest("Insufficient stock in source warehouse.");
 
-            // خصم من المخزن المصدر
+        
             sourceStock.Quantity -= transferStockDto.Quantity;
 
-            // إضافة للمخزن الهدف
+
             var targetStock = await _unitOfWork.ProductWarehouseStocks
                 .GetByProductAndWarehouseAsync(transferStockDto.ProductId, transferStockDto.TargetWarehouseId);
 
@@ -130,14 +137,14 @@ namespace InventoryManagementSystem.Controllers
                 targetStock.Quantity += transferStockDto.Quantity;
             }
 
-            // إنشاء المعاملة باستخدام AutoMapper
+        
             var transaction = _mapper.Map<InventoryTransaction>(transferStockDto);
             transaction.TransactionType = TransactionType.Transfer;
             transaction.Date = DateTime.UtcNow;
 
             await _unitOfWork.InventoryTransactions.AddAsync(transaction);
 
-            // حفظ التغييرات
+    
             await _unitOfWork.CompleteAsync();
 
             return Ok("Stock transferred successfully.");

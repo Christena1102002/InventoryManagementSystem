@@ -27,7 +27,7 @@ namespace InventoryManagementSystem.Models
         [Range(0, int.MaxValue)]
         public int LowStockThreshold { get; set; }
 
-        // Navigation Property (عشان نربطه بالـ Transactions بعدين)
+ 
         public ICollection<InventoryTransaction> Transactions { get; set; }
     }
 }

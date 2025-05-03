@@ -15,9 +15,7 @@ namespace InventoryManagementSystem.UOW
 
         public IRepository<Product> Products { get;}
         public IRepository<InventoryTransaction> InventoryTransactions { get;}
-        // public IRepository<ProductWareHouseStock> ProductWarehouseStocks { get; }
-        // public IRepository<WareHouse> WareHouses { get; }
-        //  public IRepository<ProductWareHouseStock> ProductWarehouseStock => throw new NotImplementedException();
+       
         public IProductWarehouseStockRepository ProductWarehouseStocks { get; }
         public IRepository<WareHouse> WareHouses { get; }
 

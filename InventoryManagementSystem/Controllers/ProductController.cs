@@ -29,8 +29,10 @@ namespace InventoryManagementSystem.Controllers
             {
                 return NotFound();
             }
+            var productDto = _mapper.Map<ProductDTO>(product);
 
-            return Ok(product);
+            return Ok(productDto);
+            
         }
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] Product product)
@@ -57,12 +59,7 @@ namespace InventoryManagementSystem.Controllers
                 return NotFound(); 
             }
 
-            // تحديث الخصائص التي يمكن تعديلها
-            //existingProduct.Name = product.Name;
-            //existingProduct.Description = product.Description;
-            //existingProduct.Quantity = product.Quantity;
-            //existingProduct.Price = product.Price;
-            //existingProduct.LowStockThreshold = product.LowStockThreshold;
+           
             _mapper.Map(productDto, existingProduct);
 
 
@@ -104,19 +101,12 @@ namespace InventoryManagementSystem.Controllers
                 return NotFound(); 
             }
 
-            var productDetails = new
-            {
-                product.Id,
-                product.Name,
-                product.Description,
-                product.Quantity,
-                product.Price,
-                product.LowStockThreshold,
-             
-                Transactions = product.Transactions 
-            };
+           
+            var productDto = _mapper.Map<ProductDTO>(product);
 
-            return Ok(productDetails);
+            return Ok(productDto);
+
+      
         }
 
         [HttpGet("GetAllProducts")]
@@ -124,7 +114,10 @@ namespace InventoryManagementSystem.Controllers
         {
            
             var products = await _unitOfWork.Products.GetAllAsync();
-            return Ok(products);
+            var productDtos = _mapper.Map<List<ProductDTO>>(products);
+
+            return Ok(productDtos);
+           
         }
 
 
